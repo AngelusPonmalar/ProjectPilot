@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 const rand = (seed: number) => {
   const x = Math.sin(seed * 9973.13) * 10000;
-  return x - Math.floor(x);
+  return Math.round((x - Math.floor(x)) * 1000) / 1000;
 };
 
 export function Starfield({ count = 70 }: { count?: number }) {
@@ -11,9 +11,9 @@ export function Starfield({ count = 70 }: { count?: number }) {
       Array.from({ length: count }, (_, i) => ({
         left: rand(i + 1) * 100,
         top: rand(i + 51) * 100,
-        size: 1 + rand(i + 101) * 2.6,
-        delay: rand(i + 151) * 5,
-        dur: 2.5 + rand(i + 201) * 4,
+        size: Math.round((1 + rand(i + 101) * 2.6) * 100) / 100,
+        delay: Math.round(rand(i + 151) * 500) / 100,
+        dur: Math.round((2.5 + rand(i + 201) * 4) * 100) / 100,
       })),
     [count],
   );
@@ -43,7 +43,7 @@ export function FloatingHearts({ count = 18 }: { count?: number }) {
     () =>
       Array.from({ length: count }, (_, i) => ({
         left: rand(i + 7) * 100,
-        size: 10 + rand(i + 77) * 26,
+        size: Math.round(10 + rand(i + 77) * 26),
         delay: rand(i + 177) * 18,
         dur: 14 + rand(i + 277) * 16,
         op: 0.25 + rand(i + 377) * 0.5,
