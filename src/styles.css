@@ -93,6 +93,14 @@
     color: var(--color-foreground);
     font-family: var(--font-body);
     overflow-x: hidden;
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 100 92'><path d='M50 88 C 12 60, 0 38, 0 25 A 25 25 0 0 1 50 14 A 25 25 0 0 1 100 25 C 100 38, 88 60, 50 88 Z' fill='%23ff5c8a'/></svg>")
+        14 12, auto;
+  }
+
+  button,
+  a {
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 100 92'><path d='M50 88 C 12 60, 0 38, 0 25 A 25 25 0 0 1 50 14 A 25 25 0 0 1 100 25 C 100 38, 88 60, 50 88 Z' fill='%23ff2d6f'/></svg>")
+        17 15, pointer;
   }
 }
 
