@@ -50,7 +50,7 @@ export const generateProjectPlan = createServerFn({ method: "POST" })
       }
 
       const pid = project.id;
-      const inserts: Promise<unknown>[] = [
+      const inserts = [
         supabase.from("requirements").insert(
           plan.requirements.map((r, i) => ({
             project_id: pid,
