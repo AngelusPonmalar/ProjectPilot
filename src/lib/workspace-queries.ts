@@ -18,15 +18,14 @@ export type WorkspaceTable =
 
 // The Supabase generated types resolve per-literal-table, so a union table name
 // needs a loose handle here. Every call is still RLS-scoped to the signed-in user.
-const table = (name: WorkspaceTable) =>
-  (supabase as unknown as {
-    from: (n: string) => ReturnType<typeof supabase.from<never>>;
-  }).from(name) as never as {
-    select: (columns: string) => any;
-    insert: (values: unknown) => any;
-    update: (values: unknown) => any;
-    delete: () => any;
-  };
+type LooseQuery = {
+  select: (columns: string) => any;
+  insert: (values: unknown) => any;
+  update: (values: unknown) => any;
+  delete: () => any;
+};
+const table = (name: WorkspaceTable): LooseQuery =>
+  (supabase.from as unknown as (n: string) => LooseQuery)(name);
 
 export function rowsKey(name: WorkspaceTable, projectId: string) {
   return ["workspace", name, projectId] as const;
