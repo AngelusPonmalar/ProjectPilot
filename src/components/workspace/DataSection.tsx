@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -59,6 +59,12 @@ type Props = {
   fields: FieldConfig[];
   emptyLabel: string;
   renderRow: (row: Row) => ReactNode;
+  /** Enables a search box filtering on these row keys. */
+  searchKeys?: string[];
+  /** Enables a status-style dropdown filter on this key. */
+  filterKey?: string;
+  filterOptions?: readonly string[];
+  filterLabel?: string;
 };
 
 function toFormValue(field: FieldConfig, value: unknown): string {
@@ -77,6 +83,10 @@ export function DataSection({
   fields,
   emptyLabel,
   renderRow,
+  searchKeys,
+  filterKey,
+  filterOptions,
+  filterLabel = "All",
 }: Props) {
   const { data: rows, isLoading } = useRows(table, projectId);
   const save = useSaveRow(table, projectId);
@@ -86,6 +96,19 @@ export function DataSection({
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState<Record<string, string>>({});
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
+
+  const query = search.trim().toLowerCase();
+  const visibleRows = (rows ?? []).filter((row) => {
+    if (filterKey && filter !== "all" && String(row[filterKey] ?? "") !== filter) return false;
+    if (!query || !searchKeys?.length) return true;
+    return searchKeys.some((key) => {
+      const value = row[key];
+      const text = Array.isArray(value) ? value.join(" ") : String(value ?? "");
+      return text.toLowerCase().includes(query);
+    });
+  });
 
   const openFor = (row: Row | null) => {
     setEditing(row);
@@ -126,15 +149,46 @@ export function DataSection({
         </Button>
       </div>
 
+      {(searchKeys?.length || filterKey) && (
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          {searchKeys?.length ? (
+            <div className="relative min-w-[220px] flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search…"
+                className="pl-9"
+              />
+            </div>
+          ) : null}
+          {filterKey ? (
+            <Select value={filter} onValueChange={setFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{filterLabel}</SelectItem>
+                {(filterOptions ?? []).map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : null}
+        </div>
+      )}
+
       <div className="mt-6 space-y-3">
         {isLoading ? (
           [0, 1, 2].map((i) => <Skeleton key={i} className="h-24 rounded-xl" />)
-        ) : !rows?.length ? (
+        ) : !visibleRows.length ? (
           <div className="card-elevated px-6 py-14 text-center text-sm text-muted-foreground">
-            {emptyLabel}
+            {rows?.length ? "No entries match your filters." : emptyLabel}
           </div>
         ) : (
-          rows.map((row) => (
+          visibleRows.map((row) => (
             <div key={row.id} className="card-elevated group flex items-start gap-4 p-5">
               <div className="min-w-0 flex-1">{renderRow(row)}</div>
               <div className="flex shrink-0 gap-1 opacity-60 transition-opacity group-hover:opacity-100">
