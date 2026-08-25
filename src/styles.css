@@ -118,6 +118,16 @@
   --sidebar-accent: oklch(0.29 0.04 282);
   --sidebar-accent-foreground: oklch(0.95 0.01 280);
   --sidebar-border: oklch(0.32 0.02 280);
+
+  --node-foundation: oklch(0.72 0.12 255);
+  --node-core: oklch(0.72 0.15 288);
+  --node-data: oklch(0.72 0.1 195);
+  --node-integration: oklch(0.76 0.12 55);
+  --node-insight: oklch(0.72 0.12 155);
+  --node-operations: oklch(0.72 0.03 280);
+  --canvas-grid: oklch(0.3 0.02 280);
+  --canvas-bg: oklch(0.21 0.02 280);
+  --edge-line: oklch(0.45 0.02 280);
 }
 
 @layer base {
@@ -157,6 +167,12 @@
   background-image: var(--gradient-brand);
   background-clip: text;
   color: transparent;
+}
+
+@utility flow-canvas {
+  background-color: var(--canvas-bg);
+  background-image: radial-gradient(var(--canvas-grid) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
 @utility card-elevated {
