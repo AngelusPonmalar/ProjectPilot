@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -63,6 +63,8 @@ export type Database = {
       }
       architecture: {
         Row: {
+          components: Json
+          connections: Json
           created_at: string
           explanation: string
           id: string
@@ -72,6 +74,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          components?: Json
+          connections?: Json
           created_at?: string
           explanation?: string
           id?: string
@@ -81,6 +85,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          components?: Json
+          connections?: Json
           created_at?: string
           explanation?: string
           id?: string
@@ -213,6 +219,102 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      project_invitations: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          invited_by: string
+          invited_email: string
+          project_id: string
+          role: Database["public"]["Enums"]["project_role"]
+          status: Database["public"]["Enums"]["invitation_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          invited_by: string
+          invited_email: string
+          project_id: string
+          role?: Database["public"]["Enums"]["project_role"]
+          status?: Database["public"]["Enums"]["invitation_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          invited_email?: string
+          project_id?: string
+          role?: Database["public"]["Enums"]["project_role"]
+          status?: Database["public"]["Enums"]["invitation_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_invitations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_members: {
+        Row: {
+          created_at: string
+          id: string
+          joined_at: string
+          project_id: string
+          role: Database["public"]["Enums"]["project_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          joined_at?: string
+          project_id: string
+          role?: Database["public"]["Enums"]["project_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          joined_at?: string
+          project_id?: string
+          role?: Database["public"]["Enums"]["project_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       project_versions: {
         Row: {
@@ -387,39 +489,64 @@ export type Database = {
       }
       tasks: {
         Row: {
+          assignee_id: string | null
           completed: boolean
           created_at: string
           description: string
+          due_date: string | null
           id: string
           module: string
           position: number
+          priority: string
           project_id: string
+          related_requirements: Json
+          related_story: string
+          status: string
           title: string
           updated_at: string
         }
         Insert: {
+          assignee_id?: string | null
           completed?: boolean
           created_at?: string
           description?: string
+          due_date?: string | null
           id?: string
           module?: string
           position?: number
+          priority?: string
           project_id: string
+          related_requirements?: Json
+          related_story?: string
+          status?: string
           title?: string
           updated_at?: string
         }
         Update: {
+          assignee_id?: string | null
           completed?: boolean
           created_at?: string
           description?: string
+          due_date?: string | null
           id?: string
           module?: string
           position?: number
+          priority?: string
           project_id?: string
+          related_requirements?: Json
+          related_story?: string
+          status?: string
           title?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tasks_project_id_fkey"
             columns: ["project_id"]
@@ -433,30 +560,42 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          module: string
           needs_review: boolean
+          next_screens: Json
           position: number
           project_id: string
           purpose: string
+          related_requirements: Json
+          related_stories: Json
           screen: string
           updated_at: string
         }
         Insert: {
           created_at?: string
           id?: string
+          module?: string
           needs_review?: boolean
+          next_screens?: Json
           position?: number
           project_id: string
           purpose?: string
+          related_requirements?: Json
+          related_stories?: Json
           screen?: string
           updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
+          module?: string
           needs_review?: boolean
+          next_screens?: Json
           position?: number
           project_id?: string
           purpose?: string
+          related_requirements?: Json
+          related_stories?: Json
           screen?: string
           updated_at?: string
         }
@@ -472,40 +611,55 @@ export type Database = {
       }
       user_stories: {
         Row: {
+          acceptance_criteria: Json
           code: string
           created_at: string
+          epic: string
+          goal: string
           id: string
+          module: string
           needs_review: boolean
           persona: string
           position: number
           priority: string
           project_id: string
+          related_requirements: Json
           status: string
           story: string
           updated_at: string
         }
         Insert: {
+          acceptance_criteria?: Json
           code?: string
           created_at?: string
+          epic?: string
+          goal?: string
           id?: string
+          module?: string
           needs_review?: boolean
           persona?: string
           position?: number
           priority?: string
           project_id: string
+          related_requirements?: Json
           status?: string
           story?: string
           updated_at?: string
         }
         Update: {
+          acceptance_criteria?: Json
           code?: string
           created_at?: string
+          epic?: string
+          goal?: string
           id?: string
+          module?: string
           needs_review?: boolean
           persona?: string
           position?: number
           priority?: string
           project_id?: string
+          related_requirements?: Json
           status?: string
           story?: string
           updated_at?: string
@@ -525,10 +679,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_manage_project: { Args: { _project_id: string }; Returns: boolean }
+      current_user_email: { Args: never; Returns: string }
+      is_project_member: { Args: { _project_id: string }; Returns: boolean }
       owns_project: { Args: { _project_id: string }; Returns: boolean }
+      project_role_of: {
+        Args: { _project_id: string }
+        Returns: Database["public"]["Enums"]["project_role"]
+      }
+      shares_project_with: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      invitation_status: "pending" | "accepted" | "declined" | "expired"
+      project_role:
+        | "owner"
+        | "project_manager"
+        | "developer"
+        | "designer"
+        | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -655,6 +823,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      invitation_status: ["pending", "accepted", "declined", "expired"],
+      project_role: [
+        "owner",
+        "project_manager",
+        "developer",
+        "designer",
+        "viewer",
+      ],
+    },
   },
 } as const
