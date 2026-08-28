@@ -24,9 +24,9 @@ export function DetailDrawer({
   onOpenChange: (open: boolean) => void;
   kind: string;
   title: string;
-  subtitle?: string;
+  subtitle?: string | undefined;
   fields: DetailField[];
-  footer?: ReactNode;
+  footer?: ReactNode | undefined;
 }) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

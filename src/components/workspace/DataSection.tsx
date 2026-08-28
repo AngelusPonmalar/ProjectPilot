@@ -65,6 +65,8 @@ type Props = {
   filterKey?: string;
   filterOptions?: readonly string[];
   filterLabel?: string;
+  /** Pre-populates the search box (used when jumping in from a flow view). */
+  initialSearch?: string;
 };
 
 function toFormValue(field: FieldConfig, value: unknown): string {
@@ -87,6 +89,7 @@ export function DataSection({
   filterKey,
   filterOptions,
   filterLabel = "All",
+  initialSearch = "",
 }: Props) {
   const { data: rows, isLoading } = useRows(table, projectId);
   const save = useSaveRow(table, projectId);
@@ -96,7 +99,7 @@ export function DataSection({
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState<Record<string, string>>({});
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch);
   const [filter, setFilter] = useState("all");
 
   const query = search.trim().toLowerCase();
