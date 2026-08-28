@@ -344,7 +344,7 @@ export function buildArchitecture(arch: Row | undefined): GraphResult & { derive
   const items: FlowItem[] = components.map((c) => ({
     id: `cmp:${c.id}`,
     label: c.name,
-    sublabel: c.tech || c.description?.slice(0, 40),
+    sublabel: c.tech || c.description?.slice(0, 40) || "",
     badge: (c.kind ?? "component").toUpperCase(),
     tone: KIND_TONE[norm(c.kind ?? "")] ?? "core",
     kind: "component",
