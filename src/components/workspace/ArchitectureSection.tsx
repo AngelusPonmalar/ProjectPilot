@@ -23,7 +23,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { DetailDrawer, type DetailField } from "@/components/workspace/DetailDrawer";
 import { FlowCanvas } from "@/components/workspace/FlowCanvas";
-import { SectionHeader, ViewToggle, type WorkspaceView } from "@/components/workspace/ViewToggle";
+import { SectionHeader, ViewToggle } from "@/components/workspace/ViewToggle";
+import { useWorkspaceView } from "@/lib/use-workspace-view";
 import {
   ARCH_KINDS,
   archComponents,
@@ -34,7 +35,7 @@ import type { FlowLink } from "@/lib/flow-graph";
 import { useRows, useSaveRow, type Row } from "@/lib/workspace-queries";
 
 export function ArchitectureSection({ projectId }: { projectId: string }) {
-  const [view, setView] = useState<WorkspaceView>("flow");
+  const [view, setView] = useWorkspaceView("architecture");
   const [selected, setSelected] = useState<string | null>(null);
   const [editing, setEditing] = useState<ArchComponent | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
