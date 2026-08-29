@@ -31,14 +31,25 @@ const GAP_Y = 96;
 
 export type PositionedItem = FlowItem & { x: number; y: number };
 
+export const MAX_PER_ROW = 6;
+
 export function layoutLayered(items: FlowItem[], links: FlowLink[]) {
   const layers = [...new Set(items.map((i) => i.layer))].sort((a, b) => a - b);
   const byLayer = layers.map((l) => items.filter((i) => i.layer === l));
-  const widest = Math.max(1, ...byLayer.map((l) => l.length));
+
+  // Wide layers wrap into several rows so the diagram stays readable.
+  const rows: FlowItem[][] = [];
+  for (const group of byLayer) {
+    for (let i = 0; i < group.length; i += MAX_PER_ROW) {
+      rows.push(group.slice(i, i + MAX_PER_ROW));
+    }
+  }
+
+  const widest = Math.max(1, ...rows.map((r) => r.length));
   const width = widest * NODE_W + (widest - 1) * GAP_X;
 
   const positioned: PositionedItem[] = [];
-  byLayer.forEach((group, row) => {
+  rows.forEach((group, row) => {
     const rowWidth = group.length * NODE_W + (group.length - 1) * GAP_X;
     const startX = (width - rowWidth) / 2;
     group.forEach((item, i) => {
