@@ -33,7 +33,7 @@ export function ViewToggle({
         className={`${base} ${value === "list" ? "bg-card font-medium shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
       >
         <List className="size-4" />
-        List view
+        List View
       </button>
     </div>
   );
