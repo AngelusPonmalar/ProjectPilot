@@ -5,10 +5,11 @@ export type WorkspaceView = "flow" | "list";
 export function ViewToggle({
   value,
   onChange,
-  flowLabel = "Flow view",
+  flowLabel = "Normal View",
 }: {
   value: WorkspaceView;
   onChange: (value: WorkspaceView) => void;
+  /** Tooltip describing the normal visualisation, e.g. "Traceability flow". */
   flowLabel?: string;
 }) {
   const base =
@@ -19,10 +20,11 @@ export function ViewToggle({
         type="button"
         onClick={() => onChange("flow")}
         aria-pressed={value === "flow"}
+        title={flowLabel}
         className={`${base} ${value === "flow" ? "bg-card font-medium shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
       >
         <Workflow className="size-4" />
-        {flowLabel}
+        Normal View
       </button>
       <button
         type="button"
