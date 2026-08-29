@@ -6,7 +6,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { DataSection } from "@/components/workspace/DataSection";
 import { DetailDrawer, type DetailField } from "@/components/workspace/DetailDrawer";
 import { FlowCanvas } from "@/components/workspace/FlowCanvas";
-import { SectionHeader, ViewToggle, type WorkspaceView } from "@/components/workspace/ViewToggle";
+import { SectionHeader, ViewToggle } from "@/components/workspace/ViewToggle";
+import { useWorkspaceView } from "@/lib/use-workspace-view";
 import { buildScreenFlow } from "@/lib/project-graphs";
 import { usePlanData } from "@/lib/use-plan-data";
 import type { Row } from "@/lib/workspace-queries";
@@ -16,7 +17,7 @@ const list = (row: Row | undefined, key: string): string[] =>
   Array.isArray(row?.[key]) ? (row![key] as unknown[]).map(String) : [];
 
 export function ScreensSection({ projectId }: { projectId: string }) {
-  const [view, setView] = useState<WorkspaceView>("flow");
+  const [view, setView] = useWorkspaceView("screens");
   const [selected, setSelected] = useState<string | null>(null);
   const [listSearch, setListSearch] = useState("");
   const { plan, isLoading } = usePlanData(projectId);
