@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { FolderPlus, Loader2, AlertCircle, CheckCircle2, Clock } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
+import { InvitationsInbox } from "@/components/workspace/InvitationsInbox";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -74,6 +75,7 @@ function Dashboard() {
 
   return (
     <AppShell>
+      <InvitationsInbox />
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Your projects</h1>
