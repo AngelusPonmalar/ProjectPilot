@@ -19,11 +19,18 @@ import {
   Save,
   ScrollText,
   SquareCheck,
+  Users,
   Workflow,
 } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
 import { DataSection } from "@/components/workspace/DataSection";
+import { ArchitectureSection } from "@/components/workspace/ArchitectureSection";
+import { RequirementsSection } from "@/components/workspace/RequirementsSection";
+import { ScreensSection } from "@/components/workspace/ScreensSection";
+import { StoriesSection } from "@/components/workspace/StoriesSection";
+import { TasksSection } from "@/components/workspace/TasksSection";
+import { TeamSection } from "@/components/workspace/TeamSection";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -61,6 +68,7 @@ const SECTIONS = [
   { id: "tasks", label: "Tasks", icon: SquareCheck },
   { id: "sdlc", label: "SDLC", icon: Workflow },
   { id: "versions", label: "Versions", icon: GitBranch },
+  { id: "team", label: "Team", icon: Users },
 ] as const;
 
 const sectionIds = SECTIONS.map((s) => s.id) as unknown as [string, ...string[]];
@@ -290,70 +298,9 @@ function SectionContent({
     case "overview":
       return <OverviewSection project={project} projectId={projectId} />;
     case "requirements":
-      return (
-        <DataSection
-          table="requirements"
-          projectId={projectId}
-          title="Functional requirements"
-          description="What the system must do, prioritised and traceable by code."
-          addLabel="Add requirement"
-          emptyLabel="No requirements yet."
-          fields={[
-            { key: "code", label: "Code", type: "text", placeholder: "FR-01", maxLength: 20 },
-            { key: "title", label: "Title", type: "text", maxLength: 160 },
-            { key: "description", label: "Description", type: "textarea" },
-            { key: "priority", label: "Priority", type: "select", options: PRIORITIES },
-            { key: "status", label: "Status", type: "select", options: REQUIREMENT_STATUSES },
-          ]}
-          renderRow={(row) => (
-            <>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-mono text-xs text-muted-foreground">{String(row["code"])}</span>
-                <h3 className="text-sm font-semibold">{String(row["title"])}</h3>
-                <Badge variant="outline" className="font-normal">
-                  {String(row["priority"])}
-                </Badge>
-                <Badge variant="secondary" className="font-normal">
-                  {String(row["status"])}
-                </Badge>
-              </div>
-              <p className="mt-2 text-sm text-muted-foreground">{String(row["description"])}</p>
-            </>
-          )}
-        />
-      );
+      return <RequirementsSection projectId={projectId} />;
     case "stories":
-      return (
-        <DataSection
-          table="user_stories"
-          projectId={projectId}
-          title="User stories"
-          description="The plan expressed from each user's point of view."
-          addLabel="Add story"
-          emptyLabel="No user stories yet."
-          fields={[
-            { key: "code", label: "Code", type: "text", placeholder: "US-01", maxLength: 20 },
-            { key: "persona", label: "Persona", type: "text", maxLength: 80 },
-            { key: "story", label: "Story", type: "textarea" },
-            { key: "priority", label: "Priority", type: "select", options: PRIORITIES },
-            { key: "status", label: "Status", type: "select", options: STORY_STATUSES },
-          ]}
-          renderRow={(row) => (
-            <>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-mono text-xs text-muted-foreground">{String(row["code"])}</span>
-                <Badge variant="outline" className="font-normal">
-                  {String(row["persona"])}
-                </Badge>
-                <Badge variant="secondary" className="font-normal">
-                  {String(row["status"])}
-                </Badge>
-              </div>
-              <p className="mt-2 text-sm">{String(row["story"])}</p>
-            </>
-          )}
-        />
-      );
+      return <StoriesSection projectId={projectId} />;
     case "modules":
       return (
         <DataSection
@@ -398,26 +345,7 @@ function SectionContent({
         />
       );
     case "ui":
-      return (
-        <DataSection
-          table="ui_recommendations"
-          projectId={projectId}
-          title="UI screens"
-          description="The interfaces this product needs."
-          addLabel="Add screen"
-          emptyLabel="No screens suggested yet."
-          fields={[
-            { key: "screen", label: "Screen", type: "text", maxLength: 100 },
-            { key: "purpose", label: "Purpose", type: "textarea" },
-          ]}
-          renderRow={(row) => (
-            <>
-              <h3 className="text-sm font-semibold">{String(row["screen"])}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{String(row["purpose"])}</p>
-            </>
-          )}
-        />
-      );
+      return <ScreensSection projectId={projectId} />;
     case "architecture":
       return <ArchitectureSection projectId={projectId} />;
     case "database":
@@ -500,6 +428,8 @@ function SectionContent({
       return <SdlcSection projectId={projectId} project={project} />;
     case "versions":
       return <VersionsSection projectId={projectId} />;
+    case "team":
+      return <TeamSection projectId={projectId} />;
     default:
       return null;
   }
@@ -553,140 +483,6 @@ function OverviewSection({
             <p className="mt-1 text-xs text-muted-foreground">{label}</p>
           </div>
         ))}
-      </div>
-    </section>
-  );
-}
-
-function ArchitectureSection({ projectId }: { projectId: string }) {
-  const { data, isLoading } = useRows<
-    Row & { layers: { name: string; responsibility: string; tech: string }[]; explanation: string }
-  >("architecture", projectId, "created_at");
-  const arch = data?.[0];
-
-  if (isLoading) return <Skeleton className="h-64 rounded-xl" />;
-
-  return (
-    <section>
-      <h2 className="text-xl font-semibold">Architecture</h2>
-      <p className="mt-1 text-sm text-muted-foreground">
-        The recommended system structure, layer by layer.
-      </p>
-
-      {!arch ? (
-        <div className="card-elevated mt-6 px-6 py-14 text-center text-sm text-muted-foreground">
-          No architecture generated yet.
-        </div>
-      ) : (
-        <>
-          <div className="mt-6 space-y-3">
-            {(arch.layers ?? []).map((layer, i) => (
-              <div key={layer.name} className="card-elevated flex gap-4 p-5">
-                <div className="brand-gradient flex size-8 shrink-0 items-center justify-center rounded-lg font-display text-xs font-semibold text-primary-foreground">
-                  {i + 1}
-                </div>
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-sm font-semibold">{layer.name}</h3>
-                    <Badge variant="outline" className="font-normal">
-                      {layer.tech}
-                    </Badge>
-                  </div>
-                  <p className="mt-1 text-sm text-muted-foreground">{layer.responsibility}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="card-elevated mt-4 p-5">
-            <h3 className="text-sm font-semibold">Why this works</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{arch.explanation}</p>
-          </div>
-        </>
-      )}
-    </section>
-  );
-}
-
-function TasksSection({ projectId }: { projectId: string }) {
-  const { data: tasks, isLoading } = useRows<Row & { title: string; description: string; module: string; completed: boolean }>(
-    "tasks",
-    projectId,
-  );
-  const save = useSaveRow("tasks", projectId);
-  const [newTask, setNewTask] = useState("");
-
-  const done = tasks?.filter((t) => t.completed).length ?? 0;
-
-  return (
-    <section>
-      <h2 className="text-xl font-semibold">Implementation tasks</h2>
-      <p className="mt-1 text-sm text-muted-foreground">
-        {done} of {tasks?.length ?? 0} complete — tick them off as you build.
-      </p>
-
-      <form
-        className="mt-6 flex gap-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const title = newTask.trim();
-          if (!title) return;
-          save.mutate(
-            { title, description: "", module: "Custom", position: tasks?.length ?? 0 },
-            { onSuccess: () => setNewTask("") },
-          );
-        }}
-      >
-        <Input
-          value={newTask}
-          maxLength={200}
-          placeholder="Add your own task…"
-          onChange={(e) => setNewTask(e.target.value)}
-        />
-        <Button type="submit" disabled={save.isPending}>
-          Add
-        </Button>
-      </form>
-
-      <div className="mt-4 space-y-2">
-        {isLoading ? (
-          [0, 1, 2].map((i) => <Skeleton key={i} className="h-16 rounded-xl" />)
-        ) : !tasks?.length ? (
-          <div className="card-elevated px-6 py-14 text-center text-sm text-muted-foreground">
-            No tasks yet.
-          </div>
-        ) : (
-          tasks.map((task) => (
-            <label
-              key={task.id}
-              className="card-elevated flex cursor-pointer items-start gap-3 p-4 transition-colors hover:bg-muted/40"
-            >
-              <Checkbox
-                checked={task.completed}
-                className="mt-0.5"
-                onCheckedChange={(checked) =>
-                  save.mutate({ id: task.id, completed: checked === true })
-                }
-              />
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span
-                    className={`text-sm font-medium ${task.completed ? "text-muted-foreground line-through" : ""}`}
-                  >
-                    {task.title}
-                  </span>
-                  {task.module && (
-                    <Badge variant="secondary" className="font-normal">
-                      {task.module}
-                    </Badge>
-                  )}
-                </div>
-                {task.description && (
-                  <p className="mt-1 text-sm text-muted-foreground">{task.description}</p>
-                )}
-              </div>
-            </label>
-          ))
-        )}
       </div>
     </section>
   );
